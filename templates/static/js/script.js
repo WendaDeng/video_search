@@ -99,12 +99,16 @@ $( document ).ready(function() {
       console.log(video_names)
       console.log(scores)
       console.log(idxs)
-      for(var i in idxs) {
+      if (Array.isArray(video_names) && video_names.length) {
+        for(var i in idxs) {
 //        var li = "<li>";
-        var str = '<video width="640" height="480" controls> <source src="movie.mp4" type="video/mp4"></video><p>message</p>';
-        video_str = str.replace('movie', '/static/videos/' + video_names[i]);
-        video_str = video_str.replace('message', 'video id:' + video_names[i] + '.mp4\tscore:' + scores[i]);
-        $( "#result" ).append(video_str)
+          var str = '<video width="640" height="480" controls> <source src="movie.mp4" type="video/mp4"></video><p>message</p>';
+          video_str = str.replace('movie', '/static/videos/' + video_names[i]);
+          video_str = video_str.replace('message', 'Video:' + video_names[i].substr(5) + '.mp4\tScore:' + scores[i]);
+          $( "#result" ).append(video_str)
+        };
+      } else {
+        $( "#result" ).append('<p>Do not find any related videos. Please try other queries.</p>')
       }
 //      $( "#result" ).text(resp["responseJSON"]['status'] + resp["responseJSON"]['data']);
     });
