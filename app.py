@@ -1,4 +1,7 @@
 from __future__ import print_function
+
+from collections import defaultdict
+
 from flask import Flask, render_template, make_response
 from flask import redirect, request, jsonify, url_for
 
@@ -8,12 +11,13 @@ import uuid
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import numpy as np
-import random
 
 app = Flask(__name__)
 app.secret_key = 's3cr3t'
 app.debug = True
 app._static_folder = os.path.abspath("templates/static/")
+
+result_num = 20
 
 # 生成 caption_content: caption_id 的字典
 caption_dict = {}
@@ -22,6 +26,7 @@ with open('video_caption.txt') as f:
 for line in lines:
     data = line.strip().split(':')
     caption_dict[data[-1]] = data[0]
+
 # 生成 caption_id: (video_id, video_score) 的字典
 result_dict = {}
 with open('caption_result.txt') as f:
@@ -30,14 +35,79 @@ for line in lines:
     data = line.strip().split('---')
     result_dict[data[0]] = ':'.join(data[1:])
 
+# 生成 tacos_query: query_id 字典
+tacos_query_dict = {}
+with open('tacos_query.txt') as f:
+    lines = f.readlines()
+for idx, line in enumerate(lines):
+    tacos_query_dict[line.strip().lower()[:-1]] = str(idx)
+
+# 生成 tacos_video: query_result 字典
+tacos_result_dict = defaultdict(list)
+with open('tacos_result.txt') as f:
+    lines = f.readlines()
+for line in lines:
+    data = line.strip().split(':')
+    tacos_result_dict[data[0]].append(data[1])
+
 
 @app.route('/', methods=['GET'])
 def index():
-    title = 'Video Search'
-    return render_template('layouts/index.html',
-                           title=title)
+    return render_template('layouts/index.html', title='Multimedia Search Engine')
 
 
+@app.route('/video_search', methods=['GET'])
+def video_search():
+    return render_template('layouts/video_search.html', title='Video Search')
+
+
+@app.route('/video_localize', methods=['GET'])
+def video_localize():
+    return render_template('layouts/video_localize.html', title='Video Localize')
+
+
+@app.route('/search', methods=['POST'])
+def search():
+    search_data = request.form['search_data'][1:-1]     # 去除多余的双引号 ""
+    # 检查查询语句是否对应已有视频及查询结果
+    caption_id = caption_dict[search_data] if search_data in caption_dict else None
+    # 如果存在对应的查询结果，获取事先保存的结果
+    result = result_dict[caption_id].split(':') if caption_id else None
+
+    scores, video_names = [], []
+    if result:
+        video_names = result[0].split(',')[:result_num]
+        scores = result[1].split(',')[:result_num]
+
+    idxs = list(range(1, result_num + 1))
+    params = {'video_names': video_names, 'scores': scores, 'idxs': idxs}
+    return jsonify(params)
+
+
+@app.route('/localize', methods=['POST'])
+def localize():
+    print('lllll')
+    localize_str = request.form['localize_str'][1:-1]
+    upload_video = request.form['upload_video']
+    query_id = tacos_query_dict[localize_str.lower()] if localize_str.lower() in tacos_query_dict else None
+    query_result = tacos_result_dict[upload_video + '_' + query_id] if query_id else None
+
+    rank, scores, video_names = [], [], []
+    for result in query_result:
+        # result: score_rank_start-time_end-time
+        data = result.split(',')
+        rank.append(int(data[1]))
+        # origin-video-name_score_start-time_end-time_query-id_rank
+        video_names.append(upload_video + '_' + data[0] + '_' + data[2] + '_' + data[3] +
+                           '_' + query_id + '_' + data[1])
+        scores.append(data[0])
+    # rank.sort()
+
+    params = {'video_names': video_names, 'scores': scores, 'idxs': rank}
+    return jsonify(params)
+
+
+# 原有项目方法，展示结果
 @app.route('/results/<uuid>', methods=['GET'])
 def results(uuid):
     title = 'Result'
@@ -53,23 +123,6 @@ def post_javascript_data():
     js_data = request.form['canvas_data']
     unique_id = create_csv(js_data)
     params = {'uuid': unique_id}
-    return jsonify(params)
-
-
-@app.route('/search', methods=['POST'])
-def search():
-    js_data = request.form['search_data'][1:-1]
-    caption_id = caption_dict[js_data] if js_data in caption_dict else None
-    result = result_dict[caption_id].split(':') if caption_id else None
-    idxs = list(range(10))
-    scores, video_names = [], []
-    if result:
-        video_names = result[0].split(',')[:10]
-        scores = result[1].split(',')[:10]
-
-    print('scores:', scores)
-    print('video_names: ', video_names)
-    params = {'video_names': video_names, 'scores': scores, 'idxs': idxs}
     return jsonify(params)
 
 

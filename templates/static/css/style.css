@@ -4,6 +4,11 @@
 #inputCanvas{
     border: 2px solid rgb(102,153,255);
 }
+#result{
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
 #footer{
     margin-top: 100px;
 }

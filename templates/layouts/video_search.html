@@ -1,10 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "layouts/base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<div class="row text-center">
+  <h1>{{ title}}</h1>
+  <!--<canvas id="inputCanvas" width="200" height="200"></canvas>-->
+  <input id="search" class="form-control" type="text" placeholder="请输入查询文本">
+  <button id="searchButton" class="btn btn-default" type="submit" >Search</button>
+</div>
+<br/><br/>
+<div class="row text-center">
+  <!--<button class="btn btn-primary" id="clearButton">Clear</button>-->
+  <!--<button class="btn btn-primary" id="sendButton">Send data</button>-->
+  <!--  <ul id="result"></ul>-->
+  <div id="searchResult"></div>
+</div>
+{% endblock %}

@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/static/css/style.css">
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="/static/js/script.js"></script>
+    <script src="/static/js/plupload.full.min.js"></script>
     <title>{% block title %}{% endblock %} - Simple Flask app</title>
     {% endblock %}
   </head>
@@ -23,7 +24,8 @@
           <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
               <li><a href="/">Home</a></li>
-              <li><a href="/results">Results</a></li>
+              <li><a href="/video_localize">Localize</a></li>
+              <li><a href="/video_search">Search</a></li>
             </ul>
           </div>
         </nav>
@@ -32,7 +34,7 @@
     {% block content %}{% endblock %}</div>
     <div id="footer" class="container text-center">
       {% block footer %}
-      &copy; Copyright 2017-2019 by Jitse-Jan.
+      &copy; Copyright 2020 by Wenda Deng
       {% endblock %}
     </div>
     <footer>
