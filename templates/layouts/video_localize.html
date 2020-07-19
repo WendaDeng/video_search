@@ -1,55 +1,57 @@
-{% extends "layouts/base.html" %}
-{% block title %}{{title}}{% endblock %}
-{% block head %}
-  {{ super() }}
-{% endblock %}
-{% block content %}
-<div class="row text-center">
-  <h1>{{ title}}</h1>
-  <!--<canvas id="inputCanvas" width="200" height="200"></canvas>-->
-  <input id="localize" class="form-control" type="text" placeholder="请输入查询文本">
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
 
+    <title>Video Localize</title>
+  </head>
 
-  <!-- 这里我们只使用最基本的html结构：一个选择文件的按钮，一个开始上传文件的按钮(甚至该按钮也可以不要) -->
-  <p>
-      <button id="browse">选择文件
-        <span id="Progress" style=" opacity: 0.6;z-index:10; position: absolute; bottom: 0; left: 0; height: 100%; width: 0%; display: block; background-color: #003399"></span>
-      </button>
-      <button id="start_upload" class="btn btn-default" type="submit" >开始上传</button>
-  </p>
-<!--  <script>-->
+  <body>
+    <div class="container">
+        <nav class="navbar navbar-default" role="navigation">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+          </div>
+          <a class="navbar-brand" href="#"></a>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="/">Home</a></li>
+              <li><a href="/video_localize">Localize</a></li>
+              <li><a href="/video_search">Search</a></li>
+            </ul>
+          </div>
+        </nav>
+    </div>
 
-<!--  //实例化一个plupload上传对象-->
-<!--  var uploader = new plupload.Uploader({-->
-<!--      browse_button : 'browse',-->
-<!--      url : '/localize'-->
-<!--  });-->
+    <div id="content" class="container main-container">
+      <div class="row text-center">
+        <h1>Video Localize</h1>
+        <p>
+          <input id="localize" class="form-control" type="text" placeholder="请输入查询文本">
+          <button id="browse">选择文件
+            <span id="progress" style=" opacity: 0.6;z-index:10; position: absolute; bottom: 0; left: 0; height: 100%; width: 0%; display: block; background-color: #003399">
+            </span>
+          </button>
+        </p>
+      
+        <!-- 这里我们只使用最基本的html结构：一个选择文件的按钮，一个开始上传文件的按钮(甚至该按钮也可以不要) -->
+        <p>
+            <button id="start_upload" class="btn btn-default" type="submit" >开始上传</button>
+        </p>
 
-<!--&lt;!&ndash;  在实例对象上调用init()方法进行初始化&ndash;&gt;-->
-<!--  uploader.init();-->
+        <div class="row text-center">
+          <div id="localizationResult"> </div>
+        </div>
 
-<!--&lt;!&ndash;  绑定各种事件，并在事件监听函数中做你想做的事&ndash;&gt;-->
-<!--  uploader.bind('FilesAdded',function(uploader,files){-->
-<!--    plupload.each(files, function (file) {-->
-<!--      uploader.start();-->
-<!--    });-->
-<!--  });-->
-
-<!--  uploader.bind('UploadProgress',function(uploader,file){-->
-<!--    $('#Progress').css('width', file.percent+'%');-->
-<!--  });-->
-
-<!--&lt;!&ndash;  最后给"开始上传"按钮注册事件&ndash;&gt;-->
-<!--  document.getElementById('start_upload').onclick = function(){-->
-<!--      uploader.start(); //调用实例对象的start()方法开始上传文件，当然你也可以在其他地方调用该方法-->
-<!--  }-->
-<!--  </script>-->
-</div>
-<br/><br/>
-<div class="row text-center">
-  <!--<button class="btn btn-primary" id="clearButton">Clear</button>-->
-  <!--<button class="btn btn-primary" id="sendButton">Send data</button>-->
-  <!--  <ul id="result"></ul>-->
-  <div id="localizationResult"></div>
-</div>
-{% endblock %}
+      </div>
+    </div>
+    <script src="/static/js/jquery-2.1.4.min.js"></script>
+    <script src="/static/js/plupload.full.min.js"></script>
+    <script src="/static/js/script.js"></script>
+  </body>
+</html>

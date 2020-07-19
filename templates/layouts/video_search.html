@@ -1,20 +1,49 @@
-{% extends "layouts/base.html" %}
-{% block title %}{{title}}{% endblock %}
-{% block head %}
-  {{ super() }}
-{% endblock %}
-{% block content %}
-<div class="row text-center">
-  <h1>{{ title}}</h1>
-  <!--<canvas id="inputCanvas" width="200" height="200"></canvas>-->
-  <input id="search" class="form-control" type="text" placeholder="请输入查询文本">
-  <button id="searchButton" class="btn btn-default" type="submit" >Search</button>
-</div>
-<br/><br/>
-<div class="row text-center">
-  <!--<button class="btn btn-primary" id="clearButton">Clear</button>-->
-  <!--<button class="btn btn-primary" id="sendButton">Send data</button>-->
-  <!--  <ul id="result"></ul>-->
-  <div id="searchResult"></div>
-</div>
-{% endblock %}
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <title>Video Search</title>
+  </head>
+
+  <body>
+    <div class="container">
+        <nav class="navbar navbar-default" role="navigation">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+          </div>
+          <a class="navbar-brand" href="#"></a>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="/">Home</a></li>
+              <li><a href="/video_localize">Localize</a></li>
+              <li><a href="/video_search">Search</a></li>
+            </ul>
+          </div>
+        </nav>
+    </div>
+
+    <div id="content" class="container main-container">
+      <div class="row text-center">
+        <h1>Video Search</h1>
+        <input id="search" class="form-control" type="text" placeholder="请输入查询文本">
+        <button id="searchButton" class="btn btn-default" type="submit" >Search</button>
+        </div>
+        <br/><br/>
+        <div class="row text-center">
+          <div id="searchResult"> </div>
+        </div>
+
+    </div>
+    <script src="/static/js/jquery-2.1.4.min.js"></script>
+    <script src="/static/js/plupload.full.min.js"></script>
+    <script src="/static/js/script.js"></script>
+  </body>
+</html>
+
+
