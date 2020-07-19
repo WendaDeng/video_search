@@ -1,21 +1,21 @@
-{% extends "layouts/base.html" %}
-{% block title %}{{title}}{% endblock %}
-{% block head %}
-  {{ super() }}
-{% endblock %}
-{% block content %}
-<div class="row text-center">
-  <h1>{{ title}}</h1>
-  <!--<canvas id="inputCanvas" width="200" height="200"></canvas>-->
-  <h2><a href="/video_localize">Video Localize</a></h2>
-  <h2><a href="/video_search">Video Search</a></h2>
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="./templates/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./templates/static/css/style.css">
 
-</div>
-<br/><br/>
-<!--<div class="row text-center">-->
-<!--  &lt;!&ndash;<button class="btn btn-primary" id="clearButton">Clear</button>&ndash;&gt;-->
-<!--  &lt;!&ndash;<button class="btn btn-primary" id="sendButton">Send data</button>&ndash;&gt;-->
-<!--  &lt;!&ndash;  <ul id="result"></ul>&ndash;&gt;-->
-<!--  <div id="result"></div>-->
-<!--</div>-->
-{% endblock %}
+    <title>Multimedia Search Engine</title>
+  </head>
+
+  <body>
+    <div class="row text-center">
+      <h1>Multimedia Search Engine</h1>
+      <br/><br/>
+      <h2><a href="./templates/layouts/video_localize.html">Video Localize</a></h2>
+      <h2><a href="./templates/layouts/video_search.html">Video Search</a></h2>
+    </div>
+
+    <script src="./templates/static/js/jquery-2.1.4.min.js"></script>
+    <script src="./templates/static/js/script.js"></script>
+  </body>
+</html>
