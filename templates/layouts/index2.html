@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>上传动画界面</title>
+<link rel="stylesheet" href="../static/css/font-awesome.min.css">
+<link rel="stylesheet" href="../static/css/index2.css">
+<link rel="stylesheet" href="../static/css/uploader_form.css">
+<style>
+    .gap_line{
+        width: 90%;
+        height: 16px;
+        /* border: 1px solid #000000; */
+        border-top: 1px solid #000000;
+        margin: 0 20px;
+    }
+</style>
+</head>
+<body>
+
+<div class="upload">
+	<div class="upload-files">
+		<header>
+			<p>
+				<i class="fa fa-cloud-upload" aria-hidden="true"></i>
+				<span class="up">up</span>
+				<span class="load">load</span>
+			</p>
+		</header>
+		<div class="body" id="drop">
+            <div class="uploader_form white">
+                <input type="text" class="filename" readonly="readonly"/>
+                <!-- <input id="localize" class="form-control" type="text" readonly="readonly"> -->
+                <input type="button" name="file" class="button" value="Browse..."/>
+                <input type="file" size="30"/>
+            </div>
+
+            <button class="upload_btn">
+                <i class="fa fa-cloud-upload" aria-hidden="true" style="font-size:16px"></i>
+                上传文件
+            </button>
+        </div>
+        <div class="gap_line"></div>
+        <div class="search_list">
+            <!-- 样式效果待实现 -->
+            <div>视频查询列表</div>
+            <input type="text" placeholder="输入搜索关键字"/>
+            <input type="button" value="查询">
+        </div>
+		<footer>
+			<div class="divider">
+				<span><AR>FILES</AR></span>
+			</div>
+			<div class="list-files">
+				<!--   template   -->
+			</div>
+			<button class="importar">UPDATE FILES</button>
+		</footer>
+	</div>
+</div>
+
+<script src="../static/js/jquery-3.4.1.min.js"></script>
+<script>
+    $( document ).ready(function() {
+
+        function initUploadForm() {
+            $("input[type=file]").change(function(){
+                $(this).parents(".uploader_form").find(".filename").val($(this).val());
+            });
+            $("input[type=file]").each(function(){
+                if($(this).val()==""){
+                    $(this).parents(".uploader_form").find(".filename").val("No file selected...");
+                }
+            });
+        }
+        initUploadForm();
+    })
+   
+</script>
+
+</body>
+</html>
+
