@@ -74,7 +74,7 @@ body {
 }
 .upload .upload-files .body {
   text-align: center;
-  padding: 10px 0;
+  padding: 50px 0;
   padding-bottom: 30px;
 }
 .upload .upload-files .body.hidden {
