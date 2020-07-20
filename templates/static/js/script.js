@@ -18,9 +18,9 @@ $( document ).ready(function() {
 
   // 发送搜索数据
   function sendSearchData() {
-	var data = $("#search").val();
-	console.log(data);
-	$.post( "/search", {
+    var data = $("#search").val();
+    console.log(data);
+    $.post( "/search", {
       search_data: JSON.stringify(data)
     }, function(err, req, resp){
       var video_names = resp["responseJSON"]['video_names'];
@@ -28,6 +28,7 @@ $( document ).ready(function() {
       var idxs = resp["responseJSON"]['idxs'];
       console.log(video_names)
       console.log(scores)
+      console.log(idxs)
       if (Array.isArray(video_names) && video_names.length) {
         for(var i in idxs) {
           var str = '<div> <video width="280" height="230" controls>'
@@ -35,7 +36,7 @@ $( document ).ready(function() {
             + '</video>'
             + '<p>message</p> </div>';
           video_str = str.replace('movie', '/static/videos/' + video_names[i]);
-          video_str = video_str.replace('message', '<em>Top-' + i + '\t<em>Score:' + scores[i]);
+          video_str = video_str.replace('message', '<em>Top-' + ++i + '\tScore:' + scores[i]);
           $( "#searchResult" ).append(video_str)
         };
       } else {
@@ -72,7 +73,7 @@ $( document ).ready(function() {
   // 上传完成
   uploader.bind('UploadComplete', function(uploader, files) {
     plupload.each(files, function (file) {
-      alert(file.name + ' uploaded successfully!');
+      // alert(file.name + ' uploaded successfully!');
     })
   });
 
@@ -109,11 +110,11 @@ $( document ).ready(function() {
         if (Array.isArray(video_names) && video_names.length) {
           for(var i in idxs) {
             var str = '<div> <video width="280" height="230" controls>'
-              + '<source src="movie.mp4" type="video/mp4">'
+              + '<source src="movie" type="video/mp4">'
               + '</video>'
               + '<p>message</p> </div>';
-            video_str = str.replace('movie', '/static/videos/' + video_names[i]);
-            video_str = video_str.replace('message', '<em>Top-' + i + '\t<em>Score:' + scores[i]);
+            video_str = str.replace('movie', '/static/videos/TACoS/splited/' + video_names[i]);
+            video_str = video_str.replace('message', '<em>Top-' + ++i + '\tScore:' + scores[i]);
             $( "#localizationResult" ).append(video_str)
           };
         } else {

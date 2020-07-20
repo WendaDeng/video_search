@@ -2,13 +2,12 @@ from __future__ import print_function
 
 from collections import defaultdict
 
-from flask import Flask, render_template, make_response, request, jsonify
+from flask import Flask, render_template, request, jsonify
 from flask import flash, redirect, url_for
 from werkzeug.utils import secure_filename
 
 import os
-import datetime
-import subprocess
+
 
 app = Flask(__name__)
 app.secret_key = 's3cr3t'
@@ -40,7 +39,7 @@ tacos_query_dict = {}
 with open('tacos_query.txt') as f:
     lines = f.readlines()
 for idx, line in enumerate(lines):
-    tacos_query_dict[line.strip().lower()[:-1]] = str(idx)
+    tacos_query_dict[line.strip().lower()[:-1]] = idx
 
 # 生成 tacos_video: query_result 字典
 tacos_result_dict = defaultdict(list)
@@ -79,7 +78,7 @@ def search():
         video_names = result[0].split(',')[:result_num]
         scores = result[1].split(',')[:result_num]
 
-    idxs = list(range(1, result_num + 1))
+    idxs = list(range(result_num))
     params = {'video_names': video_names, 'scores': scores, 'idxs': idxs}
     return jsonify(params)
 
@@ -102,10 +101,8 @@ def upload_file():
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
-        print(file.filename)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            print(filename)
             # 若不存在此目录，则创建之
             if not os.path.isdir(app._upload_folder):
                 os.makedirs(app._upload_folder)
@@ -135,24 +132,28 @@ def uploaded_file():
 
 @app.route('/localize', methods=['POST'])
 def localize():
-    localize_str = request.form['localize_str']
-    filename = request.form['filename']
-    print(localize_str)
-    print(filename)
-    query_id = tacos_query_dict[localize_str.lower()] if localize_str.lower() in tacos_query_dict else None
-    query_result = tacos_result_dict[upload_video + '_' + query_id] if query_id else None
-    
-    rank, scores, video_names = [], [], []
-    # for result in query_result:
-    #     # result: score_rank_start-time_end-time
-    #     data = result.split(',')
-    #     rank.append(int(data[1]))
-    #     # origin-video-name_score_start-time_end-time_query-id_rank
-    #     video_names.append(upload_video + '_' + data[0] + '_' + data[2] + '_' + data[3] +
-    #                        '_' + query_id + '_' + data[1])
-    #     scores.append(data[0])
-    
-    params = {'video_names': video_names, 'scores': scores, 'idxs': rank}
+    localize_str = request.form['localize_str'][1:-1].strip().lower()
+    localize_str = localize_str[:-1] if localize_str[-1] == '.' else localize_str
+    root, ext = os.path.splitext(request.form['filename'][1:-1])
+
+    query_id = tacos_query_dict[localize_str] if localize_str in tacos_query_dict else None
+    print(query_id)
+
+    query_result = tacos_result_dict[root + '_' + str(query_id)] if query_id else None
+    print(root + '_' + str(query_id))
+
+    scores, video_names = [], []
+    if query_result:
+        for result in query_result:
+            # result: score_rank_start-time_end-time
+            data = result.split(',')
+            # origin-video-name_score_start-time_end-time_query-id_rank
+            video_names.append(root + '_' + data[0] + '_' + data[2] + '_' +
+                            data[3] + '_' + str(query_id) + '_' + data[1] + ext)
+            scores.append(data[0])
+    scores.sort(reverse=True)
+    video_names.sort(reverse=True)
+    params = {'video_names': video_names, 'scores': scores, 'idxs': list(range(len(scores)))}
     return jsonify(params)
 
 
