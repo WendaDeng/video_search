@@ -16,7 +16,7 @@ app._static_folder = os.path.abspath("templates/static/")
 app._upload_folder = os.path.abspath("templates/upload")
 ALLOWED_EXTENSIONS = {'mp4', 'avi', 'png', 'jpg', 'jpeg', 'gif'}
 
-result_num = 20
+result_num = 12
 
 # 生成 caption_content: caption_id 的字典
 caption_dict = {}
@@ -137,25 +137,26 @@ def localize():
     root, ext = os.path.splitext(request.form['filename'][1:-1])
 
     query_id = tacos_query_dict[localize_str] if localize_str in tacos_query_dict else None
-    print(query_id)
 
     query_result = tacos_result_dict[root + '_' + str(query_id)] if query_id else None
     print(root + '_' + str(query_id))
 
-    scores, video_names = [], []
+    scores, video_names, start_end = [], [], []
     if query_result:
-        for result in query_result:
+        query_result.sort(reverse=True)
+        for result in query_result[:result_num]:
             # result: score_rank_start-time_end-time
             data = result.split(',')
             # origin-video-name_score_start-time_end-time_query-id_rank
             video_names.append(root + '_' + data[0] + '_' + data[2] + '_' +
-                            data[3] + '_' + str(query_id) + '_' + data[1] + ext)
+                            data[3] + '_' + str(query_id) + '_' + data[1])
             scores.append(data[0])
-    scores.sort(reverse=True)
-    video_names.sort(reverse=True)
-    params = {'video_names': video_names, 'scores': scores, 'idxs': list(range(len(scores)))}
+            start_end.append(data[2] + '-' + data[3])
+    
+    params = {'video_names': video_names, 'scores': scores,
+        'idxs': list(range(len(scores))), 'times': start_end}
     return jsonify(params)
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5001)

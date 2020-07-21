@@ -36,7 +36,7 @@ $( document ).ready(function() {
             + '</video>'
             + '<p>message</p> </div>';
           video_str = str.replace('movie', '/static/videos/' + video_names[i]);
-          video_str = video_str.replace('message', '<em>Top-' + ++i + '\tScore:' + scores[i]);
+          video_str = video_str.replace('message', '<em>Top-' + i + '\tScore:' + scores[i]);
           $( "#searchResult" ).append(video_str)
         };
       } else {
@@ -104,17 +104,19 @@ $( document ).ready(function() {
         var video_names = resp["responseJSON"]['video_names'];
         var scores = resp["responseJSON"]['scores'];
         var idxs = resp["responseJSON"]['idxs'];
+        var times = resp["responseJSON"]['times'];
         console.log(video_names)
         console.log(scores)
         console.log(idxs)
+        console.log(times)
         if (Array.isArray(video_names) && video_names.length) {
           for(var i in idxs) {
             var str = '<div> <video width="280" height="230" controls>'
-              + '<source src="movie" type="video/mp4">'
+              + '<source src="movie.mp4">'
               + '</video>'
               + '<p>message</p> </div>';
             video_str = str.replace('movie', '/static/videos/TACoS/splited/' + video_names[i]);
-            video_str = video_str.replace('message', '<em>Top-' + ++i + '\tScore:' + scores[i]);
+            video_str = video_str.replace('message', '<em>Top-' + ++i + '\tScore:' + scores[--i] + '\tTime:' + times[i]);
             $( "#localizationResult" ).append(video_str)
           };
         } else {
