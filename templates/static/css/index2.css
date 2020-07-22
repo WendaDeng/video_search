@@ -22,8 +22,9 @@ body {
 
 .upload {
   position: relative;
-  width: 400px;
+  width: 100%;
   min-height: 445px;
+  height: 100%;
   box-sizing: border-box;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);

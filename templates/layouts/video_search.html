@@ -3,46 +3,182 @@
   <head>
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/style.css">
-
+    <link rel="stylesheet" href="../static/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../static/css/index2.css">
+    <link rel="stylesheet" href="../static/css/uploader_form.css">
+    <style>
+      .gap_line{
+        width: 90%;
+        height: 16px;
+        border-top: 1px solid #000000;
+        margin: 0 20px;
+      }
+      .search_form{
+          text-align: center;
+          margin: 20px 20px 10px 20px;
+      }
+      .search_form .search_name{
+          float: left;
+          width: 600px;
+          border: none;
+          padding: 9px 12px;
+      }
+      .search_form .button{
+          float: right;
+      }
+      .search_list{
+          width: 60%;
+          height: 80%;
+          box-shadow: 0px 0px 5px #ddd;
+          margin: 0 auto;
+          overflow-y: scroll;
+      }
+      .search_list .item{
+          position: relative;
+          width: 100%;
+          height: 150px;
+          border-bottom: 1px solid #000000;
+      }
+      .search_list .video_name{
+          position: absolute;
+          left: 0;
+          padding: 20px 16px;
+          width: 120px;
+          overflow-wrap: break-word;
+      }
+      .search_list .video_view{
+          position: absolute;
+          right: 0;
+          width: 200px;
+      }
+      ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        /* background-color: #f3f3f3; */
+      }
+      
+      li {
+          float: left;
+      }
+      
+      li a {
+        width: 350px;
+        display: block;
+        color: #ffffff;
+        text-align: center;
+        padding: 10px;
+        text-decoration: none;
+      }
+      
+      /*鼠标移动到选项上修改背景颜色 */
+      li a:hover {
+        color: #4db6ac;
+        background-color: white;
+      }
+      /* .video_view {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+      } */
+    </style>
     <title>Video Search</title>
   </head>
 
   <body>
-    <div class="container">
-        <nav class="navbar navbar-default" role="navigation">
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-          </div>
-          <a class="navbar-brand" href="#"></a>
-          <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right">
-              <li><a href="/">Home</a></li>
-              <li><a href="/video_localize">Localize</a></li>
-              <li><a href="/video_search">Search</a></li>
-            </ul>
-          </div>
-        </nav>
-    </div>
 
-    <div id="content" class="container main-container">
-      <div class="row text-center">
-        <h1>Video Search</h1>
-        <input id="search" class="form-control" type="text" placeholder="请输入查询文本">
-        <button id="searchButton" class="btn btn-default" type="submit" >Search</button>
-        </div>
-        <br/><br/>
-        <div class="row text-center">
-          <div id="searchResult"> </div>
+    <div class="upload">
+      <div class="upload-files">
+
+        <div class="container">
+          <ul>
+            <li><a href="/"><h4>Home</h4></a></li>
+            <li><a href="/video_search"><h4>Retrieval</h4></a></li>
+            <li><a href="/video_localize"><h4>Localization</h4></a></li>
+          </ul>
         </div>
 
+        <header>
+          <p>
+            <i class="fa fa-list" aria-hidden="true"></i>
+            <span class="up">video</span>
+            <span class="load">retrieval</span>
+          </p>
+        </header>
+
+        <div class="search_form">
+            <div class="uploader_form white">
+                <input id="search" type="text" class="search_name" placeholder="输入检索语句"/>
+                <input id="searchButton" type="button" name="file" class="btn btn-default" value="查询"/>
+            </div>
+        </div>
+        
+        <div id="content" class="container main-container">
+          <div class="row text-center">
+            <div id="searchResult">
+
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
     <script src="/static/js/jquery-2.1.4.min.js"></script>
     <script src="/static/js/plupload.full.min.js"></script>
-    <script src="/static/js/script.js"></script>
+    <script>
+      $( document ).ready(function() {
+        // 遍历结果，然后逐条清除
+        function removeItem(elem_id){
+          var e = document.getElementById(elem_id);
+          var first = e.firstElementChild;
+          while (first) {
+            first.remove();
+            first = e.firstElementChild;
+          }
+        }
+
+        // 发起搜索请求（先清空原有结果）
+        $( "#searchButton" ).click(function(){
+          removeItem("searchResult");
+          sendSearchData();
+        });
+
+        // 发送搜索数据
+        function sendSearchData() {
+          var data = $("#search").val();
+          console.log(data);
+          $.post( "/search", {
+            search_data: JSON.stringify(data)
+          }, function(err, req, resp){
+            var video_names = resp["responseJSON"]['video_names'];
+            var scores = resp["responseJSON"]['scores'];
+            var idxs = resp["responseJSON"]['idxs'];
+            console.log(video_names)
+            console.log(scores)
+            console.log(idxs)
+            if (Array.isArray(video_names) && video_names.length) {
+              for(var i in idxs) {
+                var str = '<div class="item"> <div class="video_view">'
+                  + '<video width="280" height="200" controls>'
+                  + '<source src="movie.mp4" type="video/mp4">'
+                  + '</video> </div>'
+                  + '<p>message </p> </div>';
+                video_str = str.replace('movie', '/static/videos/' + video_names[i]);
+                video_str = video_str.replace('message', '<em>Top-' + ++i + '\tScore:' + scores[--i]);
+                $( "#searchResult" ).append(video_str);
+              };
+              
+            } else {
+              $( "#searchResult" ).append('<p>Do not find any related videos. Please try other queries.</p>');
+            }
+          });
+        };
+      })
+  </script>
   </body>
 </html>
 
