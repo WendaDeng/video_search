@@ -26,31 +26,6 @@
       .search_form .button{
           float: right;
       }
-      .search_list{
-          width: 60%;
-          height: 80%;
-          box-shadow: 0px 0px 5px #ddd;
-          margin: 0 auto;
-          overflow-y: scroll;
-      }
-      .search_list .item{
-          position: relative;
-          width: 100%;
-          height: 150px;
-          border-bottom: 1px solid #000000;
-      }
-      .search_list .video_name{
-          position: absolute;
-          left: 0;
-          padding: 20px 16px;
-          width: 120px;
-          overflow-wrap: break-word;
-      }
-      .search_list .video_view{
-          position: absolute;
-          right: 0;
-          width: 200px;
-      }
       ul {
         list-style-type: none;
         margin: 0;
@@ -59,7 +34,6 @@
         position: fixed;
         top: 0;
         width: 100%;
-        /* background-color: #f3f3f3; */
       }
       
       li {
@@ -80,11 +54,6 @@
         color: #4db6ac;
         background-color: white;
       }
-      /* .video_view {
-        display: flex;
-        justify-content: space-around;
-        flex-wrap: wrap;
-      } */
     </style>
     <title>Video Search</title>
   </head>
@@ -105,8 +74,8 @@
         <header>
           <p>
             <i class="fa fa-list" aria-hidden="true"></i>
-            <span class="up">video</span>
-            <span class="load">retrieval</span>
+            <span class="up">Cross-modal</span>
+            <span class="load">Video Retrieval</span>
           </p>
         </header>
 
@@ -150,7 +119,6 @@
         // 发送搜索数据
         function sendSearchData() {
           var data = $("#search").val();
-          console.log(data);
           $.post( "/search", {
             search_data: JSON.stringify(data)
           }, function(err, req, resp){
@@ -159,7 +127,6 @@
             var idxs = resp["responseJSON"]['idxs'];
             console.log(video_names)
             console.log(scores)
-            console.log(idxs)
             if (Array.isArray(video_names) && video_names.length) {
               for(var i in idxs) {
                 var str = '<div class="item"> <div class="video_view">'

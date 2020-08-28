@@ -71,7 +71,7 @@ def search():
     # 检查查询语句是否对应已有视频及查询结果
     caption_id = caption_dict[search_data] if search_data in caption_dict else None
     # 如果存在对应的查询结果，获取事先保存的结果
-    result = result_dict[caption_id].split(':') if caption_id else None
+    result = result_dict[caption_id].split(':') if caption_id and caption_id in result_dict else None
 
     scores, video_names = [], []
     if result:
