@@ -1,6 +1,7 @@
 __pycache__/
 .idea/
 .vscode/
+.DS_Store
 images/
 templates/.DS_Store
 templates/static/.DS_Store
