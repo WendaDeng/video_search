@@ -1,35 +1,26 @@
 # Using Python and Javascript together with Flask
+### 说明
+此项目是在 [python-flask-with-javascript](https://github.com/jitsejan/python-flask-with-javascript) 项目基础上改变而来
 
 ### Quickstart 
 
 ``` bash
-$ git clone https://github.com/jitsejan/python-flask-with-javascript.git
-$ cd python-flask-with-javascript
-python-flask-with-javascript $ pipenv run flask run
- * Environment: production
-   WARNING: This is a development server. Do not use it in a production deployment.
-   Use a production WSGI server instead.
- * Debug mode: off
- * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+$ git clone https://github.com/WendaDeng/video_search.git
+$ cd video_search
+# 创建一个新的Python虚拟环境，然后导入安装依赖库
+$ pip install -r requirements.txt
+# 运行程序
+$ FLASK_APP=app.py FLASK_DEBUG=1 flask run
 ```
-
-Open http://127.0.0.1:5000/, draw a character, click on Send and watch your terminal!
-
-<img src="images/in.png" alt="image-20191206022811472" style="zoom:50%;" />
-
-<img src="images/out.png" alt="image-20191206022811472" style="zoom:33%;" />
-
-
 
 ### Introduction
 
-In this project I am experimenting with sending data between Javascript and Python using the web framework Flask. Additionally I will use matplotlib to generate a dynamic graph based on the provided user input data.
+In this project I am experimenting with sending data between Javascript and Python using the web framework Flask.
 
 ### Key learning points
 
 * Sending data from Python to Javascript
 * Receiving data in Python from Javascript
-* Creating an image dynamically using a special Flask route
 
 ### Important bits
 
