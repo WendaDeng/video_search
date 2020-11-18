@@ -50,6 +50,7 @@ for line in lines:
     tacos_result_dict[data[0]].append(data[1])
 
 
+# 渲染生成基础展示页面
 @app.route('/', methods=['GET'])
 def index():
     return render_template('layouts/index.html')
@@ -65,6 +66,12 @@ def video_localize():
     return render_template('layouts/video_localize.html')
 
 
+@app.route('/video_recognize', methods=['GET'])
+def video_recognize():
+    return render_template('layouts/video_recognize.html')
+
+
+# 响应页面的请求
 @app.route('/search', methods=['POST'])
 def search():
     search_data = request.form['search_data'][1:-1]     # 去除多余的双引号 ""
@@ -123,6 +130,7 @@ def upload_file():
 
 @app.route('/uploaded', methods=['GET', 'POST'])
 def uploaded_file():
+    
 	return '''
 	<!doctype html>
 	<title>Uploaded the file</title>
@@ -148,14 +156,18 @@ def localize():
             # result: score_rank_start-time_end-time
             data = result.split(',')
             # origin-video-name_score_start-time_end-time_query-id_rank
-            video_names.append(root + '_' + data[0] + '_' + data[2] + '_' +
-                            data[3] + '_' + str(query_id) + '_' + data[1])
+            video_names.append(root + '_' + data[0] + '_' + data[2] + '_' + data[3] + '_' + str(query_id) + '_' + data[1])
             scores.append(data[0])
             start_end.append(data[2] + '-' + data[3])
     
-    params = {'video_names': video_names, 'scores': scores,
-        'idxs': list(range(len(scores))), 'times': start_end}
+    params = {'video_names': video_names, 'scores': scores, 'idxs': list(range(len(scores))), 'times': start_end}
+
     return jsonify(params)
+
+
+@app.route('/recognize', methods=['POST'])
+def recognize():
+    root, ext = os.path.splitext(request.form['filename'][1:-1])
 
 
 if __name__ == '__main__':
