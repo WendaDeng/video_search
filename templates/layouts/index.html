@@ -16,31 +16,30 @@
         margin: 0 20px;
       }
 
-      ul {
+      .row {
         list-style-type: none;
         margin: 0;
         padding: 0;
         overflow: hidden;
         position: absolute;
         top: 250px;
-        left: 25%;
+        left: 0.1%;
         width: 100%;
       }
       
-      li {
+      /* .col-md-4 {
         float: left;
       }
-      
-      li a {
-        width: 300px;
-        height: 180px;
+       */
+      .col-md-4 a {
+        height: 150px;
         display: block;
         color: #4db6ac;
         text-align: center;
         padding: 14px;
       }
       /*鼠标移动到选项上修改背景颜色 */
-      li a:hover {
+      .col-md-4 a:hover {
         color: white;
         background-color: #4db6ac;
       }
@@ -60,16 +59,25 @@
       </div>
     </div>
 
-    <div class="item">
-      <ul>
+    <div class="container-fluid">
+      <!-- <ul>
         <li><a href="/video_search"><h3>Video Retrieval</h3></a></li>
         <li><a href="/video_localize"><h3>Video Localization</h3></a></li>
         <li><a href="/video_recognize"><h3>Video Recognition</h3></a></li>
         
-        <!-- <li><a href="/video_detect"><h3>DeepFake Video Detection</h3></a></li>
+        <li><a href="/video_detect"><h3>DeepFake Video Detection</h3></a></li>
         <li><a href="/activity_anticipate"><h3>Activity Anticipation</h3></a></li>
-        <li><a href="/video_reidentify"><h3>Video ReId</h3></a></li> -->
-      </ul>
+        <li><a href="/video_reidentify"><h3>Video ReId</h3></a></li>
+      </ul> -->
+
+      <div class="row">
+        <div class="col-md-4"><a href="/video_search"><h3>Video Retrieval</h3></a></div>
+        <div class="col-md-4"><a href="/video_localize"><h3>Video Localization</h3></a></div>
+        <div class="col-md-4"><a href="/video_recognize"><h3>Video Recognition</h3></a></div>
+        <div class="col-md-4"><a href="/video_detect"><h3>DeepFake Video Detection</h3></a></div>
+        <div class="col-md-4"><a href="/activity_anticipate"><h3>Activity Anticipation</h3></a></div>
+        <div class="col-md-4"><a href="/video_reidentify"><h3>Video ReId</h3></a></div>
+      </div>
     </div>
     
 
