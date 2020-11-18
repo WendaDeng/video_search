@@ -6,4 +6,10 @@ images/
 templates/.DS_Store
 templates/static/.DS_Store
 templates/static/videos/
+templates/static/video_recognition_videos/
 templates/upload/
+*.rar
+*.tar
+*.mp4
+*.jpg
+*.png
