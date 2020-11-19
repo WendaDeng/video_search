@@ -54,6 +54,11 @@
         color: #4db6ac;
         background-color: white;
       }
+      .item {
+        color:white;
+        font-size:25px
+      }
+      
     </style>
     <title>Video Recognize</title>
   </head>
@@ -164,19 +169,19 @@
             }, function(err, req, resp){
               var scores = resp["responseJSON"]['scores'];
               var idxs = resp["responseJSON"]['idxs'];
-              var classes = resp["responseJSON"]['classes'];
+              var class_names = resp["responseJSON"]['class_names'];
               console.log(scores)
-              console.log(classes)
-              if (Array.isArray(video_names) && video_names.length) {
+              console.log(class_names)
+              if (Array.isArray(class_names) && class_names.length) {
                 var video_str = '<div class="video_view">'
-                + '<video width="280" height="200" controls>'
-                + '<source src="' + filename + '" type="video/mp4">'
+                + '<video top="20" width="480" height="360" controls>'
+                + '<source src="/static/video_recognition_videos/' + filename + '" type="video/mp4">'
                 + '</video> </div>';
                 
                 $( "#recognitionResult" ).append(video_str)
                 for(var i in idxs) {
                   var str = '<div class="item"> <p>message </p> </div>';
-                  str = str.replace('message', '<em>Top-' + ++i + '\tScore:' + scores[--i] + '\tClass:' + classes[i]);
+                  str = str.replace('message', '<em>Top-' + ++i + '\tScore:' + scores[--i] + '\tClass:' + class_names[i]);
                   $( "#recognitionResult" ).append(str)
                 };
               } else {
