@@ -7,6 +7,7 @@ from flask import flash, redirect, url_for
 from werkzeug.utils import secure_filename
 
 import os
+import time
 
 
 app = Flask(__name__)
@@ -49,6 +50,14 @@ for line in lines:
     data = line.strip().split(':')
     tacos_result_dict[data[0]].append(data[1])
 
+# 生成 video_name: prediction_result 字典，用于 video_recognition
+video_recog_dict = {}
+with open('video_recognition_results.txt') as f:
+    lines = f.readlines()
+for line in lines:
+    data = line.strip().split('-')
+    video_recog_dict[data[0]] = data[1]
+
 
 # 渲染生成基础展示页面
 @app.route('/', methods=['GET'])
@@ -79,6 +88,7 @@ def search():
     caption_id = caption_dict[search_data] if search_data in caption_dict else None
     # 如果存在对应的查询结果，获取事先保存的结果
     result = result_dict[caption_id].split(':') if caption_id and caption_id in result_dict else None
+    time.sleep(2.4)
 
     scores, video_names = [], []
     if result:
@@ -130,7 +140,7 @@ def upload_file():
 
 @app.route('/uploaded', methods=['GET', 'POST'])
 def uploaded_file():
-    
+
 	return '''
 	<!doctype html>
 	<title>Uploaded the file</title>
@@ -147,6 +157,7 @@ def localize():
     query_id = tacos_query_dict[localize_str] if localize_str in tacos_query_dict else None
 
     query_result = tacos_result_dict[root + '_' + str(query_id)] if query_id else None
+    time.sleep(4)
     print(root + '_' + str(query_id))
 
     scores, video_names, start_end = [], [], []
@@ -167,8 +178,21 @@ def localize():
 
 @app.route('/recognize', methods=['POST'])
 def recognize():
-    root, ext = os.path.splitext(request.form['filename'][1:-1])
+    filename = request.form['filename'][1:-1]
+    print('filename:', filename)
+    recog_result = video_recog_dict[filename]
+    time.sleep(3)
+    print('recog_reuslt:', recog_result)
+    scores, class_names = [], []
+    if recog_result:
+        for result in recog_result.split(','):
+            data = result.split(':')
+            class_names.append(data[0])
+            scores.append(data[1])
+    params = {'class_names': class_names, 'scores': scores, 'idxs': list(range(len(scores)))}
 
+    return jsonify(params)
+        
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
