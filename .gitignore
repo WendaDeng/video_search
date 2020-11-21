@@ -11,5 +11,10 @@ templates/upload/
 *.rar
 *.tar
 *.mp4
+*.avi
 *.jpg
 *.png
+*.pkl
+*.pickle
+*.bin
+*.zip
