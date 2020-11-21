@@ -1,13 +1,13 @@
 from __future__ import print_function
 
 from collections import defaultdict
+import os
+import time
 
 from flask import Flask, render_template, request, jsonify
 from flask import flash, redirect, url_for
 from werkzeug.utils import secure_filename
-
-import os
-import time
+from MEE_demo.predict import predict
 
 
 app = Flask(__name__)
@@ -83,17 +83,30 @@ def video_recognize():
 # 响应页面的请求
 @app.route('/search', methods=['POST'])
 def search():
-    search_data = request.form['search_data'][1:-1]     # 去除多余的双引号 ""
-    # 检查查询语句是否对应已有视频及查询结果
-    caption_id = caption_dict[search_data] if search_data in caption_dict else None
-    # 如果存在对应的查询结果，获取事先保存的结果
-    result = result_dict[caption_id].split(':') if caption_id and caption_id in result_dict else None
-    time.sleep(2.4)
+    search_data = request.form['search_data'][1:-1].strip()     # 去除多余的双引号 ""
+    if not search_data:
+        flash('Input string is empty!')
+        return render_template('layouts/video_search.html')
+    top_k = 12
+    current_dir = os.getcwd()
+    visual_feat_path = os.path.join(current_dir, 'MEE_demo/data/resnet152_features_pkl/msrvtt_resnet152_features_mee_f4.pkl')
+    flow_feat_path = os.path.join(current_dir, 'MEE_demo/data/msrvtt_flow_features_mee_mean.pkl')
+    instances_features_path = os.path.join(current_dir, 'MEE_demo/data/instances_bottom_up_features.pkl')
+    word2vec_root = os.path.join(current_dir, 'MEE_demo/data/word2vec')
+    model_params_root = os.path.join(current_dir, 'MEE_demo/model_params/params_f4_150.pkl')
 
-    scores, video_names = [], []
-    if result:
-        video_names = result[0].split(',')[:result_num]
-        scores = result[1].split(',')[:result_num]
+    # 离线版本代码
+    # # 检查查询语句是否对应已有视频及查询结果
+    # caption_id = caption_dict[search_data] if search_data in caption_dict else None
+    # # 如果存在对应的查询结果，获取事先保存的结果
+    # result = result_dict[caption_id].split(':') if caption_id and caption_id in result_dict else None
+    # scores, video_names = [], []
+    # if result:
+    #     video_names = result[0].split(',')[:result_num]
+    #     scores = result[1].split(',')[:result_num]
+
+    video_names, scores = predict(search_data, top_k, visual_feat_path, flow_feat_path, 
+                                instances_features_path, word2vec_root, model_params_root)
 
     idxs = list(range(result_num))
     params = {'video_names': video_names, 'scores': scores, 'idxs': idxs}
