@@ -56,7 +56,7 @@ class PredictDataset(Dataset):
 
     def __len__(self):
         
-        return self.length
+        return 1000# self.length
 
     def collate_data(self, video_data):
         data, video_ids = zip(*video_data)
