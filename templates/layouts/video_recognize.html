@@ -178,14 +178,14 @@
                 + '<source src="/static/video_recognition_videos/' + filename + '" type="video/mp4">'
                 + '</video> </div>';
                 
-                $( "#recognitionResult" ).append(video_str)
+                $( "#recognitionResult" ).append(video_str);
                 for(var i in idxs) {
                   var str = '<div class="item"> <p>message </p> </div>';
                   str = str.replace('message', '<em>Top-' + ++i + '\tScore:' + scores[--i] + '\tClass:' + class_names[i]);
-                  $( "#recognitionResult" ).append(str)
+                  $( "#recognitionResult" ).append(str);
                 };
               } else {
-                $( "#recognitionResult" ).append('<p>Can not recognize uploaded video. Please try other videos.</p>')
+                $( "#recognitionResult" ).append('<p>Can not recognize uploaded video. Please try other videos.</p>');
               }
             });
         });

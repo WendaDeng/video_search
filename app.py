@@ -8,6 +8,7 @@ from flask import Flask, render_template, request, jsonify
 from flask import flash, redirect, url_for
 from werkzeug.utils import secure_filename
 from MEE_demo.predict import predict
+from local_retrieval.predictor import FeatureExtrator, LocalRetrieval
 
 
 app = Flask(__name__)
@@ -83,7 +84,8 @@ def video_recognize():
 # 响应页面的请求
 @app.route('/search', methods=['POST'])
 def search():
-    search_data = request.form['search_data'][1:-1].strip()     # 去除多余的双引号 ""
+    search_data = request.form['search_data'][1:-1].strip().lower()  # 去除多余的双引号 ""
+    search_data = search_data[:-1] if search_data[-1] == '.' else search_data
     if not search_data:
         flash('Input string is empty!')
         return render_template('layouts/video_search.html')
@@ -104,12 +106,13 @@ def search():
     # if result:
     #     video_names = result[0].split(',')[:result_num]
     #     scores = result[1].split(',')[:result_num]
-
+    s = time.time()
     video_names, scores = predict(search_data, top_k, visual_feat_path, flow_feat_path, 
                                 instances_features_path, word2vec_root, model_params_root)
 
     idxs = list(range(result_num))
     params = {'video_names': video_names, 'scores': scores, 'idxs': idxs}
+    print('total runtime is :', time.time() - s)
     return jsonify(params)
 
 
@@ -165,27 +168,41 @@ def uploaded_file():
 def localize():
     localize_str = request.form['localize_str'][1:-1].strip().lower()
     localize_str = localize_str[:-1] if localize_str[-1] == '.' else localize_str
-    root, ext = os.path.splitext(request.form['filename'][1:-1])
+    video_path = os.path.join(app._upload_folder, request.form['filename'][1:-1])
+    topn = 10
+    current_dir = os.getcwd()
+    feat_extractor_model_path = os.path.join(current_dir, 'local_retrieval/c3d/c3d.pickle')
+    local_retrieval_model_path = os.path.join(current_dir, 'local_retrieval/tacos.pkl')
+    # 离线版本代码
+    # query_id = tacos_query_dict[localize_str] if localize_str in tacos_query_dict else None
+    # query_result = tacos_result_dict[root + '_' + str(query_id)] if query_id else None
+    # print(root + '_' + str(query_id))
 
-    query_id = tacos_query_dict[localize_str] if localize_str in tacos_query_dict else None
+    # scores, video_names, start_end = [], [], []
+    # if query_result:
+    #     query_result.sort(reverse=True)
+    #     for result in query_result[:result_num]:
+    #         # result: score_rank_start-time_end-time
+    #         data = result.split(',')
+    #         # origin-video-name_score_start-time_end-time_query-id_rank
+    #         video_names.append(root + '_' + data[0] + '_' + data[2] + '_' + data[3] + '_' + str(query_id) + '_' + data[1])
+    #         scores.append(data[0])
+    #         start_end.append(data[2] + '-' + data[3])
 
-    query_result = tacos_result_dict[root + '_' + str(query_id)] if query_id else None
-    time.sleep(4)
-    print(root + '_' + str(query_id))
+    s = time.time()
+    feat_extractor = FeatureExtrator(checkpoint=feat_extractor_model_path,
+                                     every_n_frames=16, overlap_ratio=0.5)
+    feat_extractor.initialize()
+    c3d_feats, duration = feat_extractor.feat_extract(video_path)
+    c3d_feats = c3d_feats.squeeze()
+    local_retrieval = LocalRetrieval(checkpoint=local_retrieval_model_path,
+                                     num_clips=256, clip_stride=2)
+    local_retrieval.initialize()
+    times = local_retrieval.predict(c3d_feats, localize_str, duration, topn)
 
-    scores, video_names, start_end = [], [], []
-    if query_result:
-        query_result.sort(reverse=True)
-        for result in query_result[:result_num]:
-            # result: score_rank_start-time_end-time
-            data = result.split(',')
-            # origin-video-name_score_start-time_end-time_query-id_rank
-            video_names.append(root + '_' + data[0] + '_' + data[2] + '_' + data[3] + '_' + str(query_id) + '_' + data[1])
-            scores.append(data[0])
-            start_end.append(data[2] + '-' + data[3])
-    
-    params = {'video_names': video_names, 'scores': scores, 'idxs': list(range(len(scores))), 'times': start_end}
-
+    params = {'times': times}
+    print('total runtime:', time.time() - s)
+    print(params)
     return jsonify(params)
 
 

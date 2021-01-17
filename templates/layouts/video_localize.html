@@ -62,9 +62,6 @@
   </head>
 
   <body>
-    
-    
-
     <div class="upload">
       <div class="upload-files">
         <div class="container">
@@ -104,8 +101,6 @@
 
       </div>
     </div>
-
-    
 
     <script src="/static/js/jquery-2.1.4.min.js"></script>
     <script src="/static/js/plupload.full.min.js"></script>
@@ -176,25 +171,22 @@
               localize_str: JSON.stringify(localize_str),
               filename: JSON.stringify(filename)
             }, function(err, req, resp){
-              var video_names = resp["responseJSON"]['video_names'];
-              var scores = resp["responseJSON"]['scores'];
-              var idxs = resp["responseJSON"]['idxs'];
               var times = resp["responseJSON"]['times'];
-              console.log(video_names)
-              console.log(scores)
-              if (Array.isArray(video_names) && video_names.length) {
-                for(var i in idxs) {
-                  var str = '<div class="item"> <div class="video_view">'
-                  + '<video width="280" height="200" controls>'
-                  + '<source src="movie.mp4" type="video/mp4">'
-                  + '</video> </div>'
-                  + '<p>message </p> </div>';
-                  video_str = str.replace('movie', '/static/videos/TACoS/splited/' + video_names[i]);
-                  video_str = video_str.replace('message', '<em>Top-' + ++i + '\tScore:' + scores[--i] + '\tTime:' + times[i]);
-                  $( "#localizationResult" ).append(video_str)
+              console.log(times);
+              if (true) {
+                var video_str = '<div class="video_view">'
+                  + '<video width="480" height="360" controls>'
+                  + '<source src="/static/videos/TACoS/original/' + filename + '" type="video/mp4">'
+                  + '</video> </div>';
+                  $( "#localizationResult" ).append(video_str);
+                for(var key in times) {
+
+                  var str = '<div class="item"> <p>message </p> </div>';
+                  str = str.replace('message', '<em>Top-' + key + '\tTime:' + times[key]);
+                  $( "#localizationResult" ).append(str);
                 };
               } else {
-                $( "#localizationResult" ).append('<p>Do not find any related videos. Please try other queries.</p>')
+                $( "#localizationResult" ).append('<p>Can not localize any video clips related to the query. Please try other queries.</p>')
               }
             });
         });
