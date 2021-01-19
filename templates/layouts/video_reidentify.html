@@ -1,0 +1,230 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="../static/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../static/css/index2.css">
+    <link rel="stylesheet" href="../static/css/uploader_form.css">
+    <style>
+      .gap_line{
+        width: 90%;
+        height: 16px;
+        border-top: 1px solid #000000;
+        margin: 0 20px;
+      }
+      ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        position: fixed;
+        top: 0;
+        width: 100%;
+      }
+      
+      li {
+          float: left;
+      }
+      
+      li a {
+        width: 350px;
+        display: block;
+        color: #ffffff;
+        text-align: center;
+        padding: 10px;
+        text-decoration: none;
+      }
+      
+      /*鼠标移动到选项上修改背景颜色 */
+      li a:hover {
+        color: #4db6ac;
+        background-color: white;
+      }
+      .form-control {
+        position: relative;
+        top: 20px;
+      }
+      .btn {
+        position: relative;
+        top: 30px;
+      }
+      #reidResult {
+        position: relative;
+        top: 35px;
+      }
+      .item {
+        color:white;
+        font-size:larger;
+      }
+    </style>
+    <title>Video Reidentify</title>
+  </head>
+
+  <body>
+    <div class="upload">
+      <div class="upload-files">
+        <div class="container">
+          <ul>
+            <li><a href="/"><h4>Home</h4></a></li>
+            <li><a href="/video_search"><h4>Retrieval</h4></a></li>
+            <li><a href="/video_localize"><h4>Localization</h4></a></li>
+            <li><a href="/video_recognize"><h4>Recognition</h4></a></li>
+          </ul>
+        </div>
+
+        <header>
+          <p>
+            <i class="fa fa-list" aria-hidden="true"></i>
+            <span class="up">Cross-modal</span>
+            <span class="load">Video Reidentify</span>
+          </p>
+        </header>
+
+        <div id="content" class="container main-container">
+          <div class="row text-center">
+            <button id="img_select" class="btn btn-default" type="submit">选择行人图片
+            </button>
+            <button id="browse" class="btn btn-default" type="submit">选择视频文件
+              <span id="progress" style=" opacity: 0.6;z-index:10; position: absolute; bottom: 0; left: 0; height: 100%; width: 0%; display: block; background-color: #003399"></span>
+            </button>
+            <button id="start_upload" class="btn btn-default" type="submit" >识别</button>
+          </div>
+        </div>
+
+        <div id="content" class="container main-container">
+          <div class="row text-center">
+            <div id="reidResult">
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <script src="/static/js/jquery-2.1.4.min.js"></script>
+    <script src="/static/js/plupload.full.min.js"></script>
+    <script>
+      $( document ).ready(function() {
+        //实例化plupload上传对象
+        var uploader = new plupload.Uploader({
+            browse_button : 'browse', //触发文件选择对话框的按钮，为那个元素id
+            url : '/upload' //服务器端的上传页面地址
+        });
+        var filename = '';
+
+        //在实例对象上调用init()方法进行初始化
+        uploader.init();
+
+        //绑定各种事件，并在事件监听函数中做你想做的事
+        uploader.bind('FilesAdded', function(uploader, files) {
+            //每个事件监听函数都会传入一些很有用的参数，
+            //我们可以利用这些参数提供的信息来做比如更新UI，提示上传进度等操作
+          plupload.each(files, function (file) {
+            filename = file.name;
+            uploader.start();
+          });
+        });
+
+        //上传中，显示进度条
+        uploader.bind('UploadProgress', function(uploader, file) {
+          $('#progress').css('width', file.percent+'%');
+        });
+
+        // 上传完成
+        uploader.bind('UploadComplete', function(uploader, files) {
+          plupload.each(files, function (file) {
+            // alert(file.name + ' uploaded successfully!');
+          })
+        });
+
+        // 上传出错
+        uploader.bind('Error', function(uploader, errObject) { //上传出错的时候触发
+          alert(errObject.code+errObject.message);
+        });
+
+        //实例化plupload 图片上传对象
+        var img_uploader = new plupload.Uploader({
+            browse_button : 'img_select', //触发文件选择对话框的按钮，为那个元素id
+            url : '/upload' //服务器端的上传页面地址
+        });
+        var img_filename = '';
+
+        img_uploader.init();
+
+        img_uploader.bind('FilesAdded', function(img_uploader, files) {
+          plupload.each(files, function (file) {
+            img_filename = file.name;
+            img_uploader.start();
+          });
+        });
+
+        img_uploader.bind('UploadProgress', function(img_uploader, file) {
+          $('#progress').css('width', file.percent+'%');
+        });
+
+        img_uploader.bind('UploadComplete', function(img_uploader, files) {
+          plupload.each(files, function (file) {
+            // alert(file.name + ' uploaded successfully!');
+          })
+        });
+
+        img_uploader.bind('Error', function(img_uploader, errObject) { //上传出错的时候触发
+          alert(errObject.code+errObject.message);
+        });
+
+        // 遍历结果，然后逐条清除
+        function removeItem(elem_id){
+          var e = document.getElementById(elem_id);
+          var first = e.firstElementChild;
+          while (first) {
+            first.remove();
+            first = e.firstElementChild;
+          }
+        }
+
+        //最后给"开始上传"按钮注册事件
+        $( "#start_upload" ).click(function(){
+          if (filename == '') {
+            alert('Please upload video file first!')
+            return;
+          }
+          if (img_filename == '') {
+            alert('Please upload image file first!')
+            return;
+          }
+          removeItem("reidResult");
+          
+          console.log(img_filename, filename);
+          $.post( "/reid", {  // 调用 app.py 中的 reid 方法
+              img_filename: JSON.stringify(img_filename),
+              filename: JSON.stringify(filename)
+            }, function(err, req, resp){
+              var result_path = resp["responseJSON"]['result_path'];
+              var img_path = resp["responseJSON"]['img_path'];
+              console.log(result_path);
+              if (true) {
+                var img_str = '<div class="col-md-6">'
+                  + '<img width="480" height="360" src="image">'
+                  + '</div>';
+                img_str = img_str.replace('image', '/static/imgs/reid/' + img_path);
+                $( "#reidResult" ).append(img_str);
+                var str = '<div class="video_view">'
+                  + '<video width="480" height="360" controls>'
+                  + '<source src="movie.mp4" type="video/mp4">'
+                  + '</video> </div>';
+                video_str = str.replace('movie.mp4', '/static/videos/reid/' + result_path);
+                // for test
+                // video_str = '<div class="video_view"><video width="280" height="200" controls=""><source src="/static/videos/reid/birthday1.mp4" type="video/mp4"></video> </div>';
+                $( "#reidResult" ).append(video_str);
+                console.log(img_str);
+              } else {
+                $( "#reidResult" ).append('<p>Can not reid any video clips related to the query.</p>')
+              }
+            });
+        });
+      })
+  </script>
+  </body>
+</html>

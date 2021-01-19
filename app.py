@@ -2,6 +2,7 @@ from __future__ import print_function
 
 from collections import defaultdict
 import os
+from datetime import datetime
 import time
 
 from flask import Flask, render_template, request, jsonify
@@ -9,7 +10,8 @@ from flask import flash, redirect, url_for
 from werkzeug.utils import secure_filename
 from MEE_demo.predict import predict
 from local_retrieval.predictor import FeatureExtrator, LocalRetrieval
-
+from reid_demo.search import detect
+from video_ocr.tools.infer.predict_system import OCR
 
 app = Flask(__name__)
 app.secret_key = 's3cr3t'
@@ -79,6 +81,16 @@ def video_localize():
 @app.route('/video_recognize', methods=['GET'])
 def video_recognize():
     return render_template('layouts/video_recognize.html')
+
+
+@app.route('/video_ocr', methods=['GET'])
+def video_ocr():
+    return render_template('layouts/video_ocr.html')
+    
+
+@app.route('/video_reidentify', methods=['GET'])
+def video_reidentify():
+    return render_template('layouts/video_reidentify.html')
 
 
 # 响应页面的请求
@@ -222,7 +234,48 @@ def recognize():
     params = {'class_names': class_names, 'scores': scores, 'idxs': list(range(len(scores)))}
 
     return jsonify(params)
+
+
+@app.route('/ocr', methods=['POST'])
+def ocr():
+    video_path = os.path.join(app._upload_folder, request.form['filename'][1:-1])
+    current_dir = os.getcwd()
+    result_dir = os.path.join(current_dir, 'templates/static/videos/ocr')
+    OCR(inp_video=video_path, out_path=result_dir)
+
+    result_name = datetime.now().strftime('%b%d_%H-%M-%S')
+    os.system('ffmpeg -i {}/output.mp4 -vcodec h264 {}'.format(
+        result_dir, os.path.join(result_dir, result_name)))
+    print(result_dir)
+    os.system('rm {}/output.mp4'.format(result_dir))
+    params = {'result_path': result_name}
+    
+    return jsonify(params)
         
+
+@app.route('/reid', methods=['POST'])
+def reid():
+    img_path = os.path.join(app._upload_folder, request.form['img_filename'][1:-1])
+    current_dir = os.getcwd()
+    os.rename(img_path, os.path.join(app._static_folder, 'imgs/reid', '0001_c1s1_001051_01.jpg'))
+    video_path = os.path.join(app._upload_folder, request.form['filename'][1:-1])
+
+    current_dir = os.getcwd()
+    image_source = os.path.join(current_dir, 'reid_demo/data')
+    result_path = detect(data=os.path.join(current_dir, 'reid_demo/data/coco.data'),
+                         weights=os.path.join(current_dir, 'reid_demo/weights/yolov3.pt'), 
+                         video_source=video_path,
+                         images_source=image_source,
+                         output_source=os.path.join(app._static_folder, 'videos/reid'))
+    print(result_path)
+    dirname, basename = os.path.split(result_path)
+    newname = datetime.now().strftime('%b%d_%H-%M-%S') + basename
+    os.system('ffmpeg -i {} -vcodec h264 {}'.format(result_path, os.path.join(dirname, newname)))
+    os.system('rm {}'.format(result_path))
+    params = {'result_path': newname, 'img_path':'0001_c1s1_001051_01.jpg'}
+
+    return jsonify(params)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
